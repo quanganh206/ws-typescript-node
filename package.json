@@ -1,0 +1,26 @@
+{
+  "name": "@xmobe/websocket-node-express",
+  "version": "1.0.0",
+  "description": "Websocket Node Typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ws",
+    "websocket",
+    "typescript",
+    "nodejs"
+  ],
+  "author": "quanganh@aiti.com.vn",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3",
+    "ws": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.11.1",
+    "@types/ws": "^5.1.1",
+    "typescript": "^2.8.3"
+  }
+}
