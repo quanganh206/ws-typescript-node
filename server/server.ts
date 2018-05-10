@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
+import { WSASYSCALLFAILURE } from 'constants';
 
 const app = express();
 
@@ -10,14 +11,30 @@ const server = http.createServer(app);
 //initialize the WebSocket server instance
 const wss = new WebSocket.Server({ server });
 
+interface ExtWebSocket extends WebSocket {
+    isAlive: boolean;
+}
+
 wss.on('connection', (ws: WebSocket) => {
 
     //connection is up, let's add a simple simple event
     ws.on('message', (message: string) => {
-
         //log the received message and send it back to the client
-        console.log('received: %s', message);
-        ws.send(`Hello, you sent -> ${message}`);
+        console.log('Received Message: %s', message);
+
+        const broadcastRegex = /^broadcast\:/;
+
+        if (broadcastRegex.test(message)) {
+            message = message.replace(broadcastRegex, '');
+
+            // send back message to the orther clients
+            wss.clients
+                .forEach(client => {
+                    client.send(`Hello, broadcast message -> ${message}`);
+                })
+        } else {
+            ws.send(`Hello, you sent -> ${message}`);
+        }
     });
 
     //send immediatly a feedback to the incoming connection    
