@@ -16,6 +16,12 @@ interface ExtWebSocket extends WebSocket {
 }
 
 wss.on('connection', (ws: WebSocket) => {
+    const extWs = ws as ExtWebSocket;
+    extWs.isAlive = true;
+
+    ws.on('pong', () => {
+        extWs.isAlive = true;
+    });
 
     //connection is up, let's add a simple simple event
     ws.on('message', (message: string) => {
@@ -40,6 +46,22 @@ wss.on('connection', (ws: WebSocket) => {
     //send immediatly a feedback to the incoming connection    
     ws.send('Hi there, I am a WebSocket server');
 });
+
+setInterval(() => {
+    console.log('Interval Running...');
+    wss.clients.forEach((ws: WebSocket) => {
+
+        const extWs = ws as ExtWebSocket;
+
+        if (!extWs.isAlive) {
+            console.log(extWs.isAlive, ' die.');
+            return ws.terminate();
+        }
+
+        extWs.isAlive = false;
+        ws.ping(null, undefined);
+    });
+}, 10000);
 
 //start our server
 server.listen(process.env.PORT || 8999, () => {
